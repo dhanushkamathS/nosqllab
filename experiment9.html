@@ -83,5 +83,34 @@
 
         }
     </pre>
+
+    <h1>python</h1>
+
+    <pre>
+    import pymongo
+
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    db = client["employee"]
+
+    collist = db.list_collection_names()
+    col = db["training"]
+
+
+  
+    # failedInAggregate(col)
+ 
+    def failedInAggregate(collection):
+        count=0
+        score=[]
+        for x in collection.find({},{"_id":1,"name":1,"results":1}):
+            temp=x["results"]
+            count=temp[0]["score"]+temp[1]["score"]+temp[2]["score"]
+            per=count/3
+            if per<=37:
+                score.append({"name":x["name"],"score":per})
+        print(score)
+
+        
+    </pre>
 </body>
 </html>

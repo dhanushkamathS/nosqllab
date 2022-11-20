@@ -91,6 +91,54 @@
 
             }
         </pre>
+    
+    <h1>python code</h1>
+
+    <pre>
+        import pymongo
+
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        db = client["employee"]
+
+        collist = db.list_collection_names()
+        col = db["training"]
+
+         averageScoreTerm1(col)
+         averageClassScore(col)
+         employeeCountFailAtleastATerm(col)
+
+    
+
+
+      
+
+
+        def averageClassScore(collection): 
+            scores =[]
+            for x in collection.find({},{"_id":-1,"name":1,"results":1}):
+                temp = x["results"]
+                avg = temp[0]["score"] + temp[1]["score"] + temp[2]["score"]
+                scores.append({"name":x["name"],"average":(avg/3)})
+            print(scores)
+
+
+        def employeeCountFailInAlLTerms(collection):
+            count =0
+            for x in collection.find({},{"_id":-1,"name":1,"results":1}):
+                temp = x["results"]
+                if(temp[0]["score"] <37 and  temp[1]['score'] <37 and temp[2]["score"] <37 ):
+                    count +=1
+            print(count)
+
+        def  employeeCountFailAtleastATerm(collection):
+            count =0
+            for x in collection.find({},{"_id":-1,"name":1,"results":1}):
+                temp = x["results"]
+                if(temp[0]["score"] <37 or  temp[1]["score"] <37 or temp[2]["score"] <37):
+                    count +=1
+            print(count)
+
+    </pre>
 
 </body>
 </html>

@@ -63,5 +63,35 @@
 
         }
     </pre>
+
+    <h1>python</h1>
+
+    <pre>
+        import pymongo
+
+        client = pymongo.MongoClient("mongodb://localhost:27017/")
+        db = client["employee"]
+
+        collist = db.list_collection_names()
+        col = db["training"]
+
+
+        # findFailedStudInTerm1(col)
+       
+
+        def findFailedStudInTerm1(collection):
+            count =0
+            score = 0
+            for data in collection.find({},{"results":1}):
+                for result in data["results"]:
+                    if result["evaluation"] == "term1" and result["score"] >= 37:
+                        score = score+result["score"]
+                        count=count+1
+            
+            print(count)
+            percentage = (score/count)
+            print(percentage)      
+    </pre>
+
 </body>
 </html>
