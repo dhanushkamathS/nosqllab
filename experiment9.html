@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>exp 9</h1>
+    <div class="navbar">
+        <a href="./index.html">Index</a>
+    </div>
+     <div class="container">
+            <img  src="./resources/exp9/exp-9.png" width="70%" h="70%" />
+    </div>
+
+    <h1>code</h1>
+    <pre>
+        import com.mongodb.*;
+        import com.mongodb.client.*;
+        import com.mongodb.client.model.Filters;
+
+        import com.mongodb.client.model.UpdateOptions;
+        import com.mongodb.client.result.*;
+        import org.bson.Document;
+        import org.bson.types.ObjectId;
+
+        import java.util.*;
+        import java.util.Arrays;
+
+        import static com.mongodb.client.model.Filters.*;
+        import static com.mongodb.client.model.Updates.*;
+        public class Main {
+            public static void main(String[] args) {
+
+
+                try {
+                    MongoClient client = MongoClients.create("mongodb://localhost:27017");
+                    MongoDatabase db = client.getDatabase("employee");
+                    MongoCollection collection = db.getCollection("training");
+
+       
+     
+                      failedInAggregate(collection);
+
+      
+                    averageScoreTerm1(collection);
+
+       
+        //            client.close();
+                } catch (Exception exception) {
+                    System.err.println(exception.getClass().getName() + ":" + exception.getMessage());
+                }
+            }
+
+         
+
+            private static void failedInAggregate(MongoCollection collection) {
+                System.out.println("");
+                System.out.println("############################# 2. Find employees who failed in aggregate (term1 + term2 + term3) #############################");
+
+                Collection<Document> employees = collection.aggregate(Arrays.asList(new Document("$unwind","$results"),
+                        new Document("$group", new Document("_id","$name").append("total", new
+                        Document("$sum","$results.score"))),new Document("$match", new Document("total",new
+                        Document("$lt",111))))).into(new ArrayList<Document>());
+                for (Document doc:employees){
+                    System.out.println("employees who failed in aggregate (term1+ term2 + term3): " + doc.toJson());
+                }
+            }
+
+            private static void averageScoreTerm1(MongoCollection collection) {
+                System.out.println("");
+                System.out.println("############################# 3. Find the Average score of trainees for term1 #############################");
+                        Collection<Document> employees = collection.aggregate(Arrays.asList( new Document("$unwind","$results"), new
+                                Document("$match",new Document("results.evaluation","term1")),new Document("$group",new
+                                Document("_id",null).append("Average", new Document("$avg","$results.score"))))).into(new ArrayList<Document>());
+                for(Document doc:employees){
+                    System.out.println("Average score of trainees for term1 : " + doc.toJson());
+                }
+            }
+
+        }
+    </pre>
+</body>
+</html>

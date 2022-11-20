@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>exp 10</h1>
+    <div class="navbar">
+        <a href="./index.html">Index</a>
+    </div>
+     <div class="container">
+            <img  src="./resources/exp10/exp10.png" width="70%" h="70%" />
+            <img  src="./resources/exp10/pymongo.png" width="70%" h="70%" />
+        </div>
+
+        <h1>code</h1>
+        <pre>
+            import com.mongodb.*;
+            import com.mongodb.client.*;
+            import com.mongodb.client.model.Filters;
+
+            import com.mongodb.client.model.UpdateOptions;
+            import com.mongodb.client.result.*;
+            import org.bson.Document;
+            import org.bson.types.ObjectId;
+
+            import java.util.*;
+            import java.util.Arrays;
+
+            import static com.mongodb.client.model.Filters.*;
+            import static com.mongodb.client.model.Updates.*;
+            public class Main {
+                public static void main(String[] args) {
+
+
+                    try {
+                        MongoClient client = MongoClients.create("mongodb://localhost:27017");
+                        MongoDatabase db = client.getDatabase("employee");
+                        MongoCollection collection = db.getCollection("training");
+
+          
+
+           
+                        averageClassScore(collection);
+                        employeeCountFailInAlLTerms(collection);
+                        employeeCountFailAtleastATerm(collection);
+
+            //            client.close();
+                    } catch (Exception exception) {
+                        System.err.println(exception.getClass().getName() + ":" + exception.getMessage());
+                    }
+                }
+
+              
+                private static void averageClassScore(MongoCollection collection) {
+                    System.out.println("");
+                    System.out.println("############################# 4. Find the Average score of trainees for aggregate (term1 + term2 + term3) #############################");
+                            Collection<Document> employees = collection.aggregate(Arrays.asList(new Document("$unwind","$results"),new Document("$group", new
+                                    Document("_id","$name").append("Average", new Document("$avg","$results.score"))))).into(new
+                                    ArrayList<Document>());
+                    for(Document doc:employees){
+                        System.out.println("Average score of trainees for aggregate (term1+ term2 + term3) : " + doc.toJson());
+                    }
+                }
+
+                //5 function
+                private static void employeeCountFailInAlLTerms(MongoCollection collection) {
+                    System.out.println("");
+                    System.out.println("############################# 5. Find number of employees who failed in all the three (term1 + term2 + term3) #############################");
+                            Long count=collection.countDocuments(new Document("results.0.score",new
+                                    Document("$lt",37)).append("results.1.score",new Document("$lt",37)).append("results.2.score",new
+                                    Document("$lt",37)));
+                    System.out.println("Count of employees failing in all terms : " + count);
+                }
+
+                //6 function
+                private static void employeeCountFailAtleastATerm(MongoCollection collection) {
+                    System.out.println("");
+                    System.out.println("############################# 6. Find the number of employees who failed in any of the three (term1 + term2 + term3) #############################");
+
+
+                    Long count=collection.countDocuments(new Document("$or",Arrays.asList(new Document("results.0.score",new
+                                    Document("$lt",37)), new Document("results.1.score",new Document("$lt",37)),new
+                                    Document("results.2.score",new Document("$lt",37)))));
+                    System.out.println("Count of employees failing in either of the terms : " + count);
+                }
+
+            }
+        </pre>
+
+</body>
+</html>
